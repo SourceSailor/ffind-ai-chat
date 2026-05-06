@@ -1,9 +1,10 @@
 import React from "react";
+import { ArrowUp } from "lucide-react";
 
 const ChatInput = () => {
   return (
-    <form className="max-w-5xl">
-      <div className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-sm focus-within:border-white/20 focus-within:bg-white/[0.07]">
+    <form className="flex-1 justify-center items-center max-w-3xl mb-5">
+      <div className="flex-1 flex items-end justify-between gap-2 rounded-2xl border grey-background p-2">
         <textarea
           rows={1}
           placeholder="Message Ffind…"
@@ -11,17 +12,9 @@ const ChatInput = () => {
         />
         <button
           type="submit"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-neutral-900 transition-colors hover:bg-neutral-200"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl yellow-button"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ArrowUp size={"20px"} />
         </button>
       </div>
     </form>

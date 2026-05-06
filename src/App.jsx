@@ -1,12 +1,14 @@
 import "./App.css";
 import ChatHeader from "./ChatHeader";
-import ChatInput from "./ChatInput";
+
+import ChatInterface from "./components/ChatInterface";
 
 function App() {
   return (
-    <div className="flex flex-col w-full h-screen ">
+    <div className="flex flex-col w-full h-screen">
       <ChatHeader />
-      <ChatInput />
+
+      <ChatInterface />
     </div>
   );
 }

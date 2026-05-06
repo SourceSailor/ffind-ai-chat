@@ -3,6 +3,8 @@
 @theme {
   --color-surface: #2a2a2a;
   --color-surface-elevated: #333333;
+  --color-brand-yellow: #ffc107;
+  --color-brand-yellow-hover: #ffd54f;
 }
 
 body {
@@ -14,4 +16,14 @@ body {
     oklch(0.34 0 0) 60%,
     oklch(0.28 0 0) 100%
   );
+}
+
+@layer components {
+  .grey-background {
+    @apply border-white/10 bg-white/5 backdrop-blur-sm focus-within:border-white/20 focus-within:bg-white/[0.07];
+  }
+
+  .yellow-button {
+    @apply bg-brand-yellow text-neutral-900 hover:bg-brand-yellow-hover transition-colors;
+  }
 }
