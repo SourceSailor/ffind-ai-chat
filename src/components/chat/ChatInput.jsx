@@ -3,8 +3,8 @@ import { ArrowUp } from "lucide-react";
 
 const ChatInput = () => {
   return (
-    <form className="flex-1 justify-center items-center max-w-3xl mb-5">
-      <div className="flex-1 flex items-end justify-between gap-2 rounded-2xl border grey-background p-2">
+    <form className="flex mb-5">
+      <div className="flex-1 flex justify-between gap-2 rounded-2xl border grey-background p-2">
         <textarea
           rows={1}
           placeholder="Message Ffind…"

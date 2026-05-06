@@ -1,7 +1,7 @@
-import "./App.css";
+import "./index.css";
 import ChatHeader from "./ChatHeader";
 
-import ChatInterface from "./components/ChatInterface";
+import ChatInterface from "./components/chat/ChatInterface";
 
 function App() {
   return (
