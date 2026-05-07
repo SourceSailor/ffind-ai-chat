@@ -2,7 +2,7 @@ import React from "react";
 
 const ChatMessages = ({ chatMessages }) => {
   return (
-    <div className="flex flex-1 flex-col w-full mt-20">
+    <div className="flex flex-1 flex-col w-full mt-20 gap-10 ">
       {chatMessages.map((msg) => (
         <div
           key={msg.id}

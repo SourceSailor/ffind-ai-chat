@@ -2,13 +2,19 @@ import "./index.css";
 import ChatHeader from "./ChatHeader";
 
 import ChatInterface from "./components/chat/ChatInterface";
+import { useChat } from "./hooks/useChat";
 
 function App() {
+  const { chatMessages, error, sendMessageToAI, clearChat } = useChat();
+
   return (
     <div className="flex flex-col w-full h-screen">
-      <ChatHeader />
+      <ChatHeader clearChat={clearChat} />
 
-      <ChatInterface />
+      <ChatInterface
+        chatMessages={chatMessages}
+        sendMessageToAI={sendMessageToAI}
+      />
     </div>
   );
 }
