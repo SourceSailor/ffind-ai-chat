@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <ChatHeader clearChat={clearChat} />
+      <ChatHeader clearChat={clearChat} chatMessages={chatMessages} />
 
       <ChatInterface
         chatMessages={chatMessages}

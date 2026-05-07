@@ -13,6 +13,10 @@ export async function sendMessage(message, previousResponseId = null) {
       model: "gpt-5.4",
       input: message,
       store: true,
+      prompt: {
+        id: "pmpt_69fd0936b64c8195b01fe81620bcf9b3032702d19f9942bc",
+        version: "1",
+      },
       ...(previousResponseId && { previous_response_id: previousResponseId }),
     }),
   });
