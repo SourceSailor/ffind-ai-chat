@@ -5,13 +5,22 @@ import ChatHeader from "./ChatHeader";
 
 import ChatInterface from "./components/chat/ChatInterface";
 import { useChat } from "./hooks/useChat";
+import ErrorBanner from "./components/ErrorBanner";
 
 function App() {
-  const { chatMessages, error, sendMessageToAI, clearChat, isLoading } =
-    useChat();
+  const {
+    chatMessages,
+    error,
+    clearError,
+    sendMessageToAI,
+    clearChat,
+    isLoading,
+  } = useChat();
 
   return (
     <div className="flex flex-col w-full h-screen">
+      <ErrorBanner error={error} onClear={clearError} />
+
       <ChatHeader clearChat={clearChat} chatMessages={chatMessages} />
 
       <ChatInterface

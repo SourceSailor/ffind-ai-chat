@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { sendMessage } from "../services/openaiAPI";
+import { mapApiError } from "../utils/errors";
 
 const STORAGE_KEY = "chat_messages";
 
@@ -17,6 +18,8 @@ export const useChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const clearError = () => setError(null);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(chatMessages));
@@ -28,20 +31,25 @@ export const useChat = () => {
   const sendMessageToAI = async (inputMessage) => {
     if (!inputMessage.trim() || isLoading) return;
 
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        role: "user",
-        content: inputMessage,
-      },
-    ]);
+    const userMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: inputMessage,
+    };
+
+    setChatMessages((prev) => [...prev, userMessage]);
 
     setIsLoading(true);
     setError(null);
 
     try {
       const data = await sendMessage(inputMessage, previousResponseId);
+
+      const aiText = data?.output[0]?.content[0]?.text;
+
+      if (!aiText) {
+        throw new Error("Received an empty or unexpected response.");
+      }
 
       setPreviousResponseId(data.id);
 
@@ -50,14 +58,17 @@ export const useChat = () => {
         {
           id: data.id,
           role: "assistant",
-          content: data.output[0].content[0].text,
+          content: aiText,
         },
       ]);
     } catch (err) {
-      setError({
-        title: "Something went wrong",
-        desc: err.message ?? "An unexpected error occurred.",
-      });
+      const mappedError = mapApiError(err);
+
+      setChatMessages((prev) =>
+        prev.filter((msg) => msg.id !== userMessage.id),
+      );
+
+      setError(mappedError);
     } finally {
       setIsLoading(false);
     }
@@ -77,6 +88,7 @@ export const useChat = () => {
     chatMessages,
     error,
     isLoading,
+    clearError,
     clearChat,
     sendMessageToAI,
   };
