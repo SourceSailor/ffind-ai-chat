@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowUp } from "lucide-react";
 
-const ChatInput = ({ textAreaRef, onSubmit }) => {
+const ChatInput = ({ textAreaRef, onSubmit, isLoading }) => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -19,9 +19,11 @@ const ChatInput = ({ textAreaRef, onSubmit }) => {
           onKeyDown={handleKeyDown}
           className="flex-1 field-sizing-content bg-transparent px-3 py-2.5 text-[15px] text-neutral-100 placeholder:text-neutral-500 focus:outline-none"
         />
+
         <button
           type="submit"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl yellow-button"
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl yellow-button ${isLoading && "cursor-not-allowed"}`}
+          disabled={isLoading}
         >
           <ArrowUp size={"20px"} />
         </button>

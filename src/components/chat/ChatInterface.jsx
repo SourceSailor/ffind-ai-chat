@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
 
-const ChatInterface = ({ chatMessages, sendMessageToAI }) => {
+const ChatInterface = ({ chatMessages, sendMessageToAI, isLoading }) => {
   const textAreaRef = useRef(null);
 
   const submitMessage = (e) => {
@@ -16,10 +16,14 @@ const ChatInterface = ({ chatMessages, sendMessageToAI }) => {
   };
 
   return (
-    <section className="max-w-3xl w-full mx-auto flex flex-col justify-between h-full px-4 overflow-auto gap-10">
-      <ChatMessages chatMessages={chatMessages} />
+    <section className="max-w-5xl w-full mx-auto flex flex-col justify-between h-full px-10 overflow-auto gap-10">
+      <ChatMessages chatMessages={chatMessages} isLoading={isLoading} />
 
-      <ChatInput textAreaRef={textAreaRef} onSubmit={submitMessage} />
+      <ChatInput
+        textAreaRef={textAreaRef}
+        onSubmit={submitMessage}
+        isLoading={isLoading}
+      />
     </section>
   );
 };
