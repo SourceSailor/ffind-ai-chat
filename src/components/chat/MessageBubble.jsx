@@ -1,5 +1,6 @@
 import React from "react";
 import { User, Bot } from "lucide-react";
+import MarkdownRenderer from "../MarkdownRenderer";
 
 const MessageBubble = ({ msg }) => {
   const CHAT_ICON_STYLES = "bg-surface-elevated p-2 rounded-full";
@@ -11,7 +12,7 @@ const MessageBubble = ({ msg }) => {
       className={`flex ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`flex items-end gap-4 bg ${isUser ? "flex-row-reverse" : "flex-row"}`}
+        className={`flex items-end gap-4 max-w-[70%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}
       >
         {isUser ? (
           <div className={CHAT_ICON_STYLES}>
@@ -24,13 +25,17 @@ const MessageBubble = ({ msg }) => {
         )}
 
         <div
-          className={`w-full max-w-[70%] px-4 py-2.5 rounded-2xl leading-relaxed text-md ${
+          className={`px-4 py-2.5 rounded-2xl leading-relaxed text-md ${
             isUser
-              ? "bg-brand-yellow text-neutral-900 rounded-br-sm"
-              : "bg-white/10 text-neutral-100 rounded-bl-sm min-w-48"
+              ? "bg-brand-yellow text-surface font-medium rounded-br-sm"
+              : "bg-white/10 text-neutral-100 rounded-bl-sm"
           }`}
         >
-          <p>{msg.content}</p>
+          {isUser ? (
+            <p>{msg.content}</p>
+          ) : (
+            <MarkdownRenderer content={msg.content} />
+          )}
         </div>
       </div>
     </div>

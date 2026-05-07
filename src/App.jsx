@@ -1,4 +1,6 @@
 import "./index.css";
+import "highlight.js/styles/github-dark.css";
+
 import ChatHeader from "./ChatHeader";
 
 import ChatInterface from "./components/chat/ChatInterface";
