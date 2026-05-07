@@ -23,11 +23,13 @@ function App() {
 
       <ChatHeader clearChat={clearChat} chatMessages={chatMessages} />
 
-      <ChatInterface
-        chatMessages={chatMessages}
-        sendMessageToAI={sendMessageToAI}
-        isLoading={isLoading}
-      />
+      <div className="flex-1 overflow-auto">
+        <ChatInterface
+          chatMessages={chatMessages}
+          sendMessageToAI={sendMessageToAI}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }

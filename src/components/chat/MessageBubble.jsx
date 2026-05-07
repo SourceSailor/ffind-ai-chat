@@ -12,14 +12,14 @@ const MessageBubble = ({ msg }) => {
       className={`flex ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`flex items-end gap-4 max-w-[70%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}
+        className={`flex items-end gap-2 sm:gap-4 max-w-[88%] sm:max-w-[75%] md:max-w-[70%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}
       >
         {isUser ? (
-          <div className={CHAT_ICON_STYLES}>
+          <div className={`${CHAT_ICON_STYLES} hidden sm:flex`}>
             <User size={"25px"} />
           </div>
         ) : (
-          <div className={CHAT_ICON_STYLES}>
+          <div className={`${CHAT_ICON_STYLES} hidden sm:flex`}>
             <Bot size={"25px"} />
           </div>
         )}

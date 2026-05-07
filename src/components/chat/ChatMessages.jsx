@@ -6,7 +6,7 @@ const ChatMessages = ({ chatMessages, isLoading }) => {
   return (
     <div className="flex flex-1 flex-col w-full mt-20 gap-10 ">
       {chatMessages.map((msg) => (
-        <MessageBubble msg={msg} />
+        <MessageBubble key={msg.id} msg={msg} />
       ))}
 
       {isLoading && <TypingIndicator />}
