@@ -6,25 +6,27 @@
  */
 
 export const mapApiError = (err) => {
-  if (err.name === "AbortError") {
+  const status = err.status || err.response?.status;
+
+  if (err.name === "APIUserAbortError" || err.name === "TimeoutError") {
     return {
       title: "Request timed out",
-      desc: "The request took too long. Please try again.",
+      desc: "The request took too long or was cancelled. Please try again.",
     };
   }
-  if (err.status === 401) {
+  if (status === 401) {
     return {
       title: "Authentication error",
       desc: "Invalid API key. Check your configuration.",
     };
   }
-  if (err.status === 429) {
+  if (status === 429) {
     return {
       title: "Rate limit reached",
       desc: "Too many requests. Please wait a moment.",
     };
   }
-  if (err.status >= 500) {
+  if (status >= 500) {
     return {
       title: "Server error",
       desc: "OpenAI is having issues. Try again shortly.",

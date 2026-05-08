@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { APIUserAbortError } from "openai";
 import { sendMessage } from "../services/openaiAPI";
 import { mapApiError } from "../utils/errors";
+import { createTimeoutSignal } from "../utils/apiTimeout";
 
 /**
  * Manages chat state, API responses and local storage chat message persistence
@@ -15,7 +17,11 @@ import { mapApiError } from "../utils/errors";
  * }}
  */
 
+// Key for Local Storage (chat messages)
 const STORAGE_KEY = "chat_messages";
+
+// Maximum length for chat messages.trim()
+const MAX_INPUT_LENGTH = 50000;
 
 export const useChat = () => {
   // Use State function that returns the Local Storage item holding the chat messages shape
@@ -30,6 +36,7 @@ export const useChat = () => {
       return [];
     }
   });
+
   const [previousResponseId, setPreviousResponseId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,61 +53,90 @@ export const useChat = () => {
   }, [chatMessages]);
 
   const sendMessageToAI = async (inputMessage) => {
+    const trimmed = inputMessage.trim();
     // Return silently if input message is empty or isLoading is true
-    if (!inputMessage.trim() || isLoading) return;
+    if (!trimmed.trim() || isLoading) return;
+
+    if (trimmed.length > MAX_INPUT_LENGTH) {
+      setError({
+        title: "Message too long",
+        desc: `Keep it under ${MAX_INPUT_LENGTH} characters.`,
+      });
+      return;
+    }
 
     // Optimistic user message shape
     // Set ChatMessages state before API call so that UI shows the user message immediately
     const userMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      content: inputMessage,
+      content: trimmed,
     };
+    const assistantId = crypto.randomUUID();
 
     setChatMessages((prev) => [...prev, userMessage]);
 
+    const timeoutSignal = createTimeoutSignal();
     setIsLoading(true);
     setError(null);
 
     try {
-      const data = await sendMessage(inputMessage, previousResponseId);
-
-      /**
-       OpenAI's response's shape varies depending on its reasoning.
-       Because of this, the output text can exist on different indexes in the output response. 
-    
-       Search the output response to find the index that has type of message. Then, search that object for the output text and return it
-       */
-      const outputMessage = data?.output?.find(
-        (block) => block.type === "message",
-      );
-      const aiText = outputMessage?.content?.find(
-        (block) => block.type === "output_text",
-      )?.text;
-
-      if (!aiText) {
-        throw new Error("Received an empty or unexpected response.");
+      // Streaming Response
+      for await (const event of sendMessage(trimmed, {
+        previousResponseId,
+        signal: timeoutSignal,
+      })) {
+        if (event.type === "delta") {
+          setChatMessages((prev) => {
+            const last = prev[prev.length - 1];
+            // First delta event append the new assistant message defined above
+            if (last?.id !== assistantId) {
+              return [
+                ...prev,
+                { id: assistantId, role: "assistant", content: event.text },
+              ];
+            }
+            // Return the rest of the delta text events
+            return prev.map((m) =>
+              m.id === assistantId
+                ? { ...m, content: m.content + event.text }
+                : m,
+            );
+          });
+        } else if (event.type === "done") {
+          setPreviousResponseId(event.responseId);
+        }
+      }
+    } catch (err) {
+      // Open AI's SDK returns APIUserAbortError when throwing an error
+      // If an abort/timeout we exit early and set the error title and desc to update the UI
+      if (err instanceof APIUserAbortError) {
+        if (timeoutSignal.aborted) {
+          setError({
+            title: "Request timed out",
+            desc: "The assistant took too long to respond. Please try again.",
+          });
+        }
+        // user-initiated cancel
+        return;
       }
 
-      // Previous Response ID (Responses API): Use this to create multi-turn conversations. - via OpenAI Documentation
-      setPreviousResponseId(data.id);
-
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          id: data.id,
-          role: "assistant",
-          content: aiText,
-        },
-      ]);
-    } catch (err) {
       // Custom error function that returns a custom object - {title, description} - dependent on error type/status
       const mappedError = mapApiError(err);
 
-      // Remove optimistic user message from UI if request fails
+      // user cancelled — no error to show
+      if (!mappedError) return;
+
       setChatMessages((prev) =>
-        prev.filter((msg) => msg.id !== userMessage.id),
+        prev.map((m) => (m.id === assistantId ? { ...m, error: true } : m)),
       );
+
+      if (timeoutSignal.aborted) {
+        setError({
+          title: "Request timed out",
+          desc: "The assistant took too long to respond. Please try again.",
+        });
+      }
 
       setError(mappedError);
     } finally {

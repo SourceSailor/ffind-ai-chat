@@ -1,51 +1,52 @@
-const OPENAI_URL = "https://api.openai.com/v1/responses";
+import OpenAI from "openai";
 
-const APIKEY = import.meta.env.VITE_OPENAI_API_KEY;
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
-// API boilerplate function
-const API_CALL = async ({ method, previousResponseId, message }) => {
-  return fetch(`${OPENAI_URL}`, {
-    method: method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${APIKEY}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-5.5",
-      input: message,
-      store: true,
-      //   Custom AI agent prompt ID
-      //  This is where the tone, brand voice, and basic context live
-      prompt: {
-        id: "pmpt_69fd0936b64c8195b01fe81620bcf9b3032702d19f9942bc",
-        version: "1",
-      },
-      ...(previousResponseId && { previous_response_id: previousResponseId }),
-    }),
-  });
-};
+//   Custom OpenAI agent prompt ID
+//  This is where the tone, brand voice, and basic context live
+const PROMPT_ID = "pmpt_69fd0936b64c8195b01fe81620bcf9b3032702d19f9942bc";
+
+// Maximum allowed time for an API call
 
 /**
+ *  Streaming response from OpenAI's SDK API
  *
  * @param {string} message - user message
  * @param {string | null} previousResponseId - ID to chain responses to a conversation
- * @returns {promise <Object>} Raw OpenAI response object
- * @throws {Error}
+ * * @param {AbortSignal} [options.signal] - Signal to cancel or timeout the request
+ * @yields {{type: "delta", text: string} | {type: "done", responseId: string}}
  *
  */
-export async function sendMessage(message, previousResponseId = null) {
-  const response = await API_CALL({
-    method: "POST",
-    message: message,
-    previousResponseId: previousResponseId,
-    isStreaming: false,
-  });
+export async function* sendMessage(
+  message,
+  { previousResponseId = null, signal } = {},
+) {
+  const stream = await openai.responses.create(
+    {
+      model: "gpt-5.5",
+      input: message,
+      store: true,
+      stream: true,
+      prompt: {
+        id: PROMPT_ID,
+        version: "1",
+      },
+      ...(previousResponseId && { previous_response_id: previousResponseId }),
+    },
+    { signal },
+  );
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => {});
-    throw new Error(err?.error?.message ?? `API Error ${response.status}`);
+  for await (const event of stream) {
+    // Search for the output delta event that contains the streaming text
+    if (event.type === "response.output_text.delta") {
+      // Return the text from the delta event
+      yield { type: "delta", text: event.delta };
+    } else if (event.type === "response.completed") {
+      // Return done after delta event and carries the response Id
+      yield { type: "done", responseId: event.response.id };
+    }
   }
-  const data = await response.json();
-
-  return data;
 }
