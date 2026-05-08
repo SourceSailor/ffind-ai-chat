@@ -1,5 +1,4 @@
-import React from "react";
-import Ffind_Logo from "./assets/Ffind_logo.svg";
+import Ffind_Logo from "../../assets/Ffind_logo.svg";
 
 const ChatHeader = ({ clearChat, chatMessages }) => {
   return (

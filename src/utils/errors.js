@@ -1,3 +1,10 @@
+/**
+ * Maps raw API or network error
+ *
+ * @param {Object} err
+ * @returns {{title: string, desc: string}} - returns an object with custom keys dependent on error status/type
+ */
+
 export const mapApiError = (err) => {
   if (err.name === "AbortError") {
     return {

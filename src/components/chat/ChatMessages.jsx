@@ -1,4 +1,3 @@
-import React from "react";
 import TypingIndicator from "../loading/TypingIndicator";
 import MessageBubble from "./MessageBubble";
 

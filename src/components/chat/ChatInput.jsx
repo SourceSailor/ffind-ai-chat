@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowUp } from "lucide-react";
 
 const ChatInput = ({ textAreaRef, onSubmit, isLoading }) => {
@@ -14,6 +13,7 @@ const ChatInput = ({ textAreaRef, onSubmit, isLoading }) => {
       <div className="flex-1 flex justify-between gap-2 rounded-2xl border grey-background p-2">
         <textarea
           rows={1}
+          autoFocus
           ref={textAreaRef}
           placeholder="Message Ffind…"
           onKeyDown={handleKeyDown}

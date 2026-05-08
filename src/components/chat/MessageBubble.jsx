@@ -1,16 +1,18 @@
-import React from "react";
 import { User, Bot } from "lucide-react";
 import MarkdownRenderer from "../MarkdownRenderer";
 
 const MessageBubble = ({ msg }) => {
   const CHAT_ICON_STYLES = "bg-surface-elevated p-2 rounded-full";
+
   const isUser = msg.role === "user";
 
   return (
+    // Display Bot and user messages justify end or start dependent depending on role
     <div
       key={msg.id}
       className={`flex ${isUser ? "justify-end" : "justify-start"}`}
     >
+      {/*  Display Bot and user icon dependent depending on role  */}
       <div
         className={`flex items-end gap-2 sm:gap-4 max-w-[88%] sm:max-w-[75%] md:max-w-[70%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}
       >
@@ -24,6 +26,7 @@ const MessageBubble = ({ msg }) => {
           </div>
         )}
 
+        {/* User and Bot bubble styles dependent depending on role */}
         <div
           className={`px-4 py-2.5 rounded-2xl leading-relaxed text-md ${
             isUser

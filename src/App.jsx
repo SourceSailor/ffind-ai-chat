@@ -1,13 +1,12 @@
 import "./index.css";
 import "highlight.js/styles/github-dark.css";
 
-import ChatHeader from "./ChatHeader";
+import { ChatHeader, ChatInterface, ErrorBanner } from "./components";
 
-import ChatInterface from "./components/chat/ChatInterface";
 import { useChat } from "./hooks/useChat";
-import ErrorBanner from "./components/ErrorBanner";
 
 function App() {
+  // Chat API Hook
   const {
     chatMessages,
     error,
@@ -19,9 +18,9 @@ function App() {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <ErrorBanner error={error} onClear={clearError} />
-
       <ChatHeader clearChat={clearChat} chatMessages={chatMessages} />
+
+      <ErrorBanner error={error} onClear={clearError} />
 
       <div className="flex-1 overflow-auto">
         <ChatInterface
