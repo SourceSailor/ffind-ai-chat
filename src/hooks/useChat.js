@@ -17,8 +17,9 @@ import { createTimeoutSignal } from "../utils/apiTimeout";
  * }}
  */
 
-// Key for Local Storage (chat messages)
+// Keys for Local Storage
 const STORAGE_KEY = "chat_messages";
+const STORAGE_RESPONSE_ID = "response_id";
 
 // Maximum length for chat messages.trim()
 const MAX_INPUT_LENGTH = 50000;
@@ -37,25 +38,43 @@ export const useChat = () => {
     }
   });
 
-  const [previousResponseId, setPreviousResponseId] = useState(null);
+  const [previousResponseId, setPreviousResponseId] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_RESPONSE_ID);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const clearError = () => setError(null);
 
-  // useEffect which sets the Chat Messages shape to Local Storage for the useState function
+  // useEffect which sets the chat messages state to Local Storage once streaming is complete
   useEffect(() => {
+    if (isLoading) return; // skip mid-stream writes
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(chatMessages));
+      console.log("CHAT MESSAGES: ", chatMessages);
     } catch {
-      // storage quota exceeded — fail silently
+      // fail silently
     }
-  }, [chatMessages]);
+  }, [chatMessages, isLoading]);
+
+  // useEffect which sets the API's Response's ID to Local Storage
+  useEffect(() => {
+    localStorage.setItem(
+      STORAGE_RESPONSE_ID,
+      JSON.stringify(previousResponseId),
+    );
+    console.log("RESPONSE ID: ", previousResponseId);
+  }, [previousResponseId]);
 
   const sendMessageToAI = async (inputMessage) => {
     const trimmed = inputMessage.trim();
     // Return silently if input message is empty or isLoading is true
-    if (!trimmed.trim() || isLoading) return;
+    if (!trimmed || isLoading) return;
 
     if (trimmed.length > MAX_INPUT_LENGTH) {
       setError({
@@ -130,13 +149,6 @@ export const useChat = () => {
       setChatMessages((prev) =>
         prev.map((m) => (m.id === assistantId ? { ...m, error: true } : m)),
       );
-
-      if (timeoutSignal.aborted) {
-        setError({
-          title: "Request timed out",
-          desc: "The assistant took too long to respond. Please try again.",
-        });
-      }
 
       setError(mappedError);
     } finally {
