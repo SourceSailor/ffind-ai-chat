@@ -9,7 +9,7 @@ const ChatInput = ({ textAreaRef, onSubmit, isLoading }) => {
   };
 
   return (
-    <form className="flex mb-5" onSubmit={onSubmit}>
+    <form className="flex mb-5" onSubmit={onSubmit} aria-label="Send message">
       <div className="flex-1 flex justify-between gap-2 rounded-2xl border grey-background p-2">
         <textarea
           rows={1}

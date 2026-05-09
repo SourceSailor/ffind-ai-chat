@@ -22,13 +22,13 @@ function App() {
 
       <ErrorBanner error={error} onClear={clearError} />
 
-      <div className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto">
         <ChatInterface
           chatMessages={chatMessages}
           sendMessageToAI={sendMessageToAI}
           isLoading={isLoading}
         />
-      </div>
+      </main>
     </div>
   );
 }
