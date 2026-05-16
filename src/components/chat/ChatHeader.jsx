@@ -1,19 +1,15 @@
-import Ffind_Logo from "../../assets/Ffind_logo.svg";
-
 const ChatHeader = ({ clearChat, chatMessages }) => {
   return (
-    <header className="flex justify-center gap-2 border-b grey-background py-4">
+    <header className="flex justify-center gap-2 py-4">
       <div className="flex flex-1 justify-between px-4 sm:px-6 md:px-10">
-        <img src={Ffind_Logo} className="w-28 md:w-36" alt="Ffind logo" />
+        <p>
+          Kyle <span>/ portfolio in conversation</span>
+        </p>
 
-        {chatMessages.length > 0 && (
-          <button
-            onClick={clearChat}
-            className="px-3 py-2 rounded-lg yellow-button"
-          >
-            New Chat
-          </button>
-        )}
+        <div className="flex gap-4">
+          <button className="px-4 py-2 rounded-3xl bg-amber-100">Resume</button>
+          <button>Reach out</button>
+        </div>
       </div>
     </header>
   );
